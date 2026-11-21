@@ -6,16 +6,24 @@
 
 ## 从 IRIS 终端运行
 
-[Importer](src/KaggleShelf.Importer.cls) 和 [CsvReader](src/KaggleShelf.CsvReader.cls) 使用 ObjectScript 实现 CSV 解析、列名映射、来源登记、建表和事务替换。KaggleHub 负责下载指定的文件。
+[Importer](src/KaggleShelf/Importer.cls) 和 [CsvReader](src/KaggleShelf/CsvReader.cls) 使用 ObjectScript 实现 CSV 解析、列名映射、来源登记、建表和事务替换。KaggleHub 负责下载指定的文件。
 
-1. 将仓库放在 IRIS 实例可读取的目录（示例为 `/app`），在目标命名空间编译类。导入账号须能在 `KaggleShelf` 模式建表并读写导入表。
+1. 在安装了 [InterSystems Package Manager（IPM）](https://github.com/intersystems/ipm) 的目标应用命名空间运行以下命令。将仓库复制或挂载到 IRIS 主机，并将路径替换为包含 `module.xml` 的目录。安装账号须有权在该命名空间编译类。
+
+```objectscript
+zpm "load /opt/kaggle-csv-shelf"
+```
+
+   如果配置的 IPM 注册库已发布此包，也可执行 `zpm "install kaggle-csv-shelf"`。 导入账号须能在 `KaggleShelf` 模式建表并读写导入表。
+
+   也可以手动编译。将仓库挂载到 `/app` 后，在目标命名空间运行以下命令。
 
 ```objectscript
 set sc=$system.OBJ.LoadDir("/app/src","ck",,1)
-do $system.Status.DisplayError(sc)
+if $system.Status.IsError(sc) do $system.Status.DisplayError(sc)
 ```
 
-2. 如需从 IRIS 终端直接下载，将 KaggleHub 安装到 IRIS Embedded Python 可见的位置。以下命令适用于官方 Linux IRIS 2026.2 容器，须在容器内以有目标目录写权限的账号执行。其他安装按实际 Python 目录调整。KaggleHub 需要 Python 3.11+。
+2. IPM 会根据根目录的 requirements.txt 自动安装 KaggleHub，需要允许 pip 访问 PyPI 或配置好的依赖镜像。以下命令适用于手动编译类的安装方式。如需从 IRIS 终端直接下载，将 KaggleHub 安装到 IRIS Embedded Python 可见的位置。以下命令适用于官方 Linux IRIS 2026.2 容器，须在容器内以有目标目录写权限的账号执行。其他安装按实际 Python 目录调整。KaggleHub 需要 Python 3.11+。
 
 ```sh
 python3 -m pip install --target /usr/irissys/mgr/python kagglehub==1.0.3
@@ -40,7 +48,7 @@ write ##class(KaggleShelf.Importer).ImportFile("example/source","sample.csv","Sa
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-cli.txt
 export IRIS_DSN='localhost:1972/USER'
 export IRIS_USER='your-import-user'
 # Set IRIS_PASSWORD in your shell or secret manager.

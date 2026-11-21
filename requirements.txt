@@ -1,2 +1,1 @@
-intersystems-irispython==5.4.1
 kagglehub==1.0.3

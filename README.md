@@ -6,16 +6,24 @@ Import one named CSV from a public Kaggle dataset into its own InterSystems IRIS
 
 ## Run from the IRIS terminal
 
-[Importer](src/KaggleShelf.Importer.cls) and [CsvReader](src/KaggleShelf.CsvReader.cls) implement CSV parsing, column mapping, source registration, table creation and atomic replacement in ObjectScript. KaggleHub downloads the selected member.
+[Importer](src/KaggleShelf/Importer.cls) and [CsvReader](src/KaggleShelf/CsvReader.cls) implement CSV parsing, column mapping, source registration, table creation and atomic replacement in ObjectScript. KaggleHub downloads the selected member.
 
-1. Copy or mount the project at a location readable by IRIS (such as `/app`). Compile the classes in the application namespace. The importer needs permission to create and update tables in `KaggleShelf`.
+1. Open the target application namespace with [InterSystems Package Manager (IPM)](https://github.com/intersystems/ipm) installed. Copy or mount the checkout on the IRIS host and replace the path below with the directory containing `module.xml`. The installing account needs permission to compile classes in this namespace.
+
+```objectscript
+zpm "load /opt/kaggle-csv-shelf"
+```
+
+   If your configured registry carries the module, you can also run `zpm "install kaggle-csv-shelf"`. The import account needs permission to create and update tables in the `KaggleShelf` schema.
+
+   To compile manually, mount the checkout at `/app` and run the following in the target namespace.
 
 ```objectscript
 set sc=$system.OBJ.LoadDir("/app/src","ck",,1)
-do $system.Status.DisplayError(sc)
+if $system.Status.IsError(sc) do $system.Status.DisplayError(sc)
 ```
 
-2. For direct Kaggle downloads, install the SDK where IRIS Embedded Python can import it. The following command runs inside the official Linux IRIS 2026.2 container as a user with write access to the target. Adjust the Python directory on other installations. KaggleHub requires Python 3.11+.
+2. IPM installs KaggleHub from the root requirements.txt for direct Kaggle downloads. Allow pip to reach PyPI or use an approved wheel mirror. For a manual class installation, install the SDK where IRIS Embedded Python can import it. The following command runs inside the official Linux IRIS 2026.2 container as a user with write access to the target. Adjust the Python directory on other installations. KaggleHub requires Python 3.11+.
 
 ```sh
 python3 -m pip install --target /usr/irissys/mgr/python kagglehub==1.0.3
@@ -40,7 +48,7 @@ The existing CLI downloads via KaggleHub and streams the member into IRIS throug
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-cli.txt
 export IRIS_DSN='localhost:1972/USER'
 export IRIS_USER='your-import-user'
 # Set IRIS_PASSWORD in your shell or secret manager.
