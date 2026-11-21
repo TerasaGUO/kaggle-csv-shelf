@@ -14,7 +14,7 @@ Import one named CSV from a public Kaggle dataset into its own InterSystems IRIS
 zpm "load /opt/kaggle-csv-shelf"
 ```
 
-   If your configured registry carries the module, you can also run `zpm "install kaggle-csv-shelf"`. The import account needs permission to create and update tables in the `KaggleShelf` schema.
+   If your configured registry carries the module, you can also run `zpm "install kaggle-csv-shelf 1.0.0"`. The import account needs permission to create and update tables in the `KaggleShelf` schema.
 
    To compile manually, mount the checkout at `/app` and run the following in the target namespace.
 

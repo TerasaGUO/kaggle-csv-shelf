@@ -14,7 +14,7 @@
 zpm "load /opt/kaggle-csv-shelf"
 ```
 
-   如果配置的 IPM 注册库已发布此包，也可执行 `zpm "install kaggle-csv-shelf"`。 导入账号须能在 `KaggleShelf` 模式建表并读写导入表。
+   如果配置的 IPM 注册库已发布此包，也可执行 `zpm "install kaggle-csv-shelf 1.0.0"`。 导入账号须能在 `KaggleShelf` 模式建表并读写导入表。
 
    也可以手动编译。将仓库挂载到 `/app` 后，在目标命名空间运行以下命令。
 
